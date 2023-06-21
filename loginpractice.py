@@ -39,12 +39,14 @@ class Test_practice:
         self.driver.find_element(By.XPATH,"//a[@class='btn btn-primary']").click()
         time.sleep(5)
         self.driver.find_element(By.XPATH,"//a[normalize-space()='Delete Account']").click()
-    def add_product(self):
+    def test_add_product(self):
         self.driver.implicitly_wait(5)
         self.driver.get("https://automationexercise.com/")
         self.driver.find_element(By.XPATH,"//a[@href='/products']").click()
         self.driver.find_element(By.ID,"search_product").send_keys("tshirt")
         self.driver.find_element(By.ID,"submit_search").click()
+        self
+
 
 
 
