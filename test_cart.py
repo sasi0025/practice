@@ -9,11 +9,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-class Test_cart:
+
+
+class Test_cart():
     driver=webdriver.Chrome()
     driver.get("https://rahulshettyacademy.com/seleniumPractise/#/")
 
+
+
     def test_search_product(self):
+
         self.driver.implicitly_wait(5)
         self.driver.find_element(By.XPATH,"//input[@placeholder='Search for Vegetables and Fruits']").send_keys("ber")
         vegitables=self.driver.find_elements(By.XPATH,"//div[@class='product']")
