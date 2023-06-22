@@ -6,7 +6,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 
 from dump.utilities.baseclass import BaseClass
-from practice.automationexercice.log import log
 
 
 class Test_001:
@@ -20,6 +19,7 @@ class Test_001:
         for i in radiobuttons:
             if i.get_attribute("value")=="radio3":
                 i.click()
+
 
     def test_autosugestion(self):
         self.driver.find_element(By.XPATH,"//input[@placeholder='Type to Select Countries']").send_keys("Ind")
