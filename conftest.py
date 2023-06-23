@@ -1,5 +1,4 @@
 import os
-
 import pytest
 from selenium import webdriver
 import time
@@ -7,6 +6,9 @@ import logging
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 driver = None
 
@@ -55,6 +57,10 @@ def pytest_runtest_makereport(item):
 
         report.extra = extra
 
+        if not report.skipped:
+            request = item._request
+            email_report(request)
+
 def _capture_screenshot(name):
     global driver
     driver.get_screenshot_as_file(name)
@@ -98,5 +104,49 @@ class EmailSender:
 
     def close(self):
         self.server.quit()
+
+    def _capture_screenshot(self, name):
+        self.driver.get_screenshot_as_file(name)
+
+def generate_html_report(test_name):
+    # Generate visualization graph
+    fig, ax = plt.subplots()
+    ax.plot([1, 2, 3, 4, 5], [1, 4, 2, 3, 5])
+    ax.set_xlabel('X-axis')
+    ax.set_ylabel('Y-axis')
+    ax.set_title('Sample Graph')
+    plt.savefig('graph.png')
+
+    # Create the HTML report
+    report_html = f'''
+    <html>
+    <head></head>
+    <body>
+        <h2>Test Result: {test_name}</h2>
+        <h3>Visualization Graph:</h3>
+        <img src="graph.png" alt="graph" style="width: 400px;height: 300px;"><br>
+        <h3>Logs:</h3>
+        <pre>{get_logs()}</pre><br>
+        <h3>Screenshot:</h3>
+        <img src="{get_screenshot_filename()}" alt="screenshot" style="width: 400px;height: 300px;">
+    </body>
+    </html>
+    '''
+
+    # Send the email with the HTML report
+    email_sender.send_email(test_name, report_html)
+
+def get_logs():
+    logger = logging.getLogger()
+    log_content = ''
+    for handler in logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            with open(handler.baseFilename, 'r') as log_file:
+                log_content += log_file.read() + '\n'
+    return log_content
+
+def get_screenshot_filename():
+    timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
+    return f'screenshot_{timestamp}.png'
 
 email_sender._capture_screenshot = _capture_screenshot
